@@ -10,6 +10,7 @@ import sys
 
 from posting import Posting
 
+file_num = 1
 
 def tokenize(doc):
     soup = BeautifulSoup(doc['content'], 'html.parser')
@@ -60,7 +61,7 @@ def buildIndex():
     index_hash = {}
     final_hash = {}
     id = 0
-    file_num = 1
+    global file_num # use for later
     threshold = 0
     docs_counter = 0
     #for d in docs:
@@ -92,9 +93,15 @@ def buildIndex():
 
                 file_name = f"idx{file_num}"
                 with open(file_name, 'w') as out_file:
+                    counter = 1
                     for shi in sorted_hash.items:
                         dump_obj = json.dumps(shi)
-                        out_file.write(dump_obj + '\n')
+                        if counter < 10000:
+                            out_file.write(dump_obj + '\n')
+                        else:
+                            out_file.write(dump_obj) # so that there's no \n on the last line
+                        counter += 1
+
                 out_file.close()        
                 file_num += 1
                 
@@ -111,6 +118,22 @@ def buildIndex():
 
 def mergeIndexes():
     #merge sort the files together
+
+    files = [open('idx{i}.txt') for i in range(file_num)] # opens all of the files and stores name
+
+    pointers = [0] * len(files) # each index i of pointers array corresponds to the pointer position for file i
+
+    for i in range(len(pointers)): # need to figure out how to access all files simultaneously
+        files[i].seek(pointers[i])
+        line = files[i].readline()
+
+        # TO DO
+
+
+
+
+
+
     print()
 
 
