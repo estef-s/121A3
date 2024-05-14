@@ -62,13 +62,15 @@ def buildIndex():
     id = 0
     file_num = 1
     threshold = 0
-    tokens_counter = 0
+    docs_counter = 0
     #for d in docs:
     for dirpath, dirnames, filenames in os.walk('ANALYST'):
         for file in filenames:
             print(f'file{id}')
             id += 1
             filepath = os.path.join(dirpath, file)
+            docs_counter += 1
+
             with open(filepath, 'r') as f:
                 d = json.load(f)
                 #parse & remove duplicates
@@ -82,21 +84,52 @@ def buildIndex():
                     
                     else:
                         index_hash[t].append(Posting(id, tokens_dict[t]))
-                    
-                    tokens_counter += 1
-                    
-                    
 
+            if docs_counter == 10000:
+                #essentially if we went through 10000 documents, dump into text file
+
+                sorted_hash = dict(sorted(index_hash.items()))
+
+                file_name = f"idx{file_num}"
+                with open(file_name, 'w') as out_file:
+                    for shi in sorted_hash.items:
+                        dump_obj = json.dumps(shi)
+                        out_file.write(dump_obj + '\n')
+                out_file.close()        
+                file_num += 1
+                
 
     #file size
-    with open('size_file', 'wb') as size_file:
-        pickle.dump(index_hash, size_file)
-    print(f"size: {sys.getsizeof(index_hash)}")
-    print(f"number of documents {id}")
-    print(f"number of words {len(index_hash.keys())}")
+    # with open('size_file', 'wb') as size_file:
+    #     pickle.dump(index_hash, size_file)
+    # print(f"size: {sys.getsizeof(index_hash)}")
+    # print(f"number of documents {id}")
+    # print(f"number of words {len(index_hash.keys())}")
    
     return index_hash     
+    
 
+def mergeIndexes():
+    #merge sort the files together
+    print()
+
+
+def buildIndexofIndexf():
+    indexMap = {}
+    addSize = 0
+    position = 0
+    with open('masterIndex.txt', 'r') as file:
+        for line in file:
+            #jsonloads line
+
+            #line = file.readline()
+            #indexMap[line[]] = position #add token to dict
+            #addSize = len(line)
+            print()
+        
+        indexIndex = open('indexMap')
+        pickle.dump(index_hash, size_file)
+    
 
 if __name__ == '__main__':
     buildIndex()
