@@ -128,7 +128,7 @@ def buildIndexofIndexf():
             print()
         
         indexIndex = open('indexMap')
-        pickle.dump(index_hash, size_file)
+        #pickle.dump(index_hash, size_file)
     
 
 if __name__ == '__main__':
