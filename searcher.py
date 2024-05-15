@@ -1,22 +1,44 @@
-# for our search engine
+import json
 
+memoryIndex = {}
+docNames = {}
 def startEngine():
-    #load index of index
-    #load doc names
+    #load index of index into memoryIndex
+    memoryIndex = json.load('indexIndex.txt')
+    #load doc names into docNames
+    docNames = json.load('docUrl.txt')
 
     while True:
         #take in input
+        query = input()
         #split up input
-        #look for input in masterindex.txt using seek
-        #get the posting lists
-        #use intersection
-        #return intersection
+        tokens = query.split()
+        
+        tokenDict = {}
+        for token in tokens:
+            #get the posting lists from in masterindex.txt using seek
+            tokenDict[token] = findTokenList(token)
+        
+        #return intersection of lists
+        commonDocs = []
         #go through docnames and match up doc ids w/ url
-        #^ return that list
-        print()
+        urls = getdocURLS(commonDocs)
+        print(urls)
         break
 
-    print("end")
+
+def findTokenList(token):
+    with open('masterIndex.txt', 'r') as file:
+        position = memoryIndex[token]
+        file.seek(position)
+        list = file.readline() #change to json.loads
+    return list
+
+def getdocURLS(docList):
+    urlList = []
+    for doc in docList:
+        urlList.append(docNames[doc])
+    return docList
 
 if __name__ == '__main__':
     startEngine()

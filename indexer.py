@@ -82,7 +82,7 @@ def buildIndex():
                     else:
                         index_hash[t].append(Posting(id, tokens_dict[t]))
 
-            if docs_counter == 1000:
+            if docs_counter == 663:
                 #essentially if we went through 10000 documents, dump into text file
 
                 sorted_hash = dict(sorted(index_hash.items()))
@@ -121,16 +121,22 @@ def buildIndex():
         docs_counter = 0
 
     #dump docNames into file
+    docs = open('docUrl.txt', 'w')
+    json.dump(docNames, docs)
     #merge files
+    tempMerge = 'tempMerge.txt'
+    mergeIndexes('idx1.txt', 'idx2.txt', tempMerge)
+    mergeIndexes(tempMerge, 'idx3.txt', 'masterIndex.txt')
     #build index of index
+    buildIndexofIndex()
 
     return index_hash     
     
 
-#pass in file to write to
-def mergeIndexes(file1, file2):
+#takes in files to merge and file to write to
+def mergeIndexes(file1, file2, writeFile):
     
-    combinedIndex = open('masterIndex.txt', 'w')
+    combinedIndex = open(writeFile, 'w')
     idx1 = open(file1, 'r')
     idx2 = open(file2, 'r')
     line1 = idx1.readline()
@@ -164,45 +170,40 @@ def mergeIndexes(file1, file2):
     
 
     if not line1:
-        print("index1 ended first")
+        #print("index1 ended first")
         while line2:
             combinedIndex.write(line2.strip() + '\n')
             line2 = idx2.readline()
     else:
-        print("index2 ended first")
+        #print("index2 ended first")
         while line1:
             combinedIndex.write(line1.strip() + '\n')
             line1 = idx1.readline()
+
+    combinedIndex.close()
+    idx1.close()
+    idx2.close()
     
 
-
-def buildIndexofIndexf():
+def buildIndexofIndex():
     indexMap = {}
     addSize = 0
     position = 0
     with open('masterIndex.txt', 'r') as file:
-        for line in file:
+        line = file.readline()
+        while line:
             #jsonloads line
-
-            #line = file.readline()
-            #indexMap[line[]] = position #add token to dict
-            #addSize = len(line)
-            print()
+            indexMap[line] = position
+            addSize = len(line)
+            position = position + addSize
+            line = file.readline()
         
-        indexIndex = open('indexMap')
-
-    #dump index into file
-    #pickle.dump(index_hash, size_file)
     
+    storeIndex = open('indexIndex.txt', 'w')
+    #dump index into file
+    json.dump(indexMap, storeIndex)
+    storeIndex.close()
+    return indexMap
 
 if __name__ == '__main__':
     buildIndex()
-    
-
-
-#file size
-    # with open('size_file', 'wb') as size_file:
-    #     pickle.dump(index_hash, size_file)
-    # print(f"size: {sys.getsizeof(index_hash)}")
-    # print(f"number of documents {id}")
-    # print(f"number of words {len(index_hash.keys())}")
