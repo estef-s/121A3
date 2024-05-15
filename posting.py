@@ -13,5 +13,6 @@ class Posting:
         return self.docID
 
     def getScore(self):
-
         return self.score
+
+    
