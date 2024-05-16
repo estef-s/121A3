@@ -1,5 +1,6 @@
 import json
-#import indexer
+import indexer
+
 memoryIndex = {}
 docNames = {}
 def startEngine():
@@ -44,7 +45,7 @@ def startEngine():
         #return intersection of list
         
         #go through docnames and match up doc ids w/ url
-        print("THIS IS docNAMES\n", docNames)
+        #print("THIS IS docNAMES\n", docNames)
         urls = getdocURLS(intersect_docID)
         print(urls)
         break
@@ -61,13 +62,11 @@ def findTokenList(token):
 
 def getdocURLS(docList):
     urlList = []
-    print("TESTING\n", docNames[772])
+    #print("TESTING\n", docNames[772])
     for doc in docList:
-        urlList.append(docNames[doc])
-
-    
-    return docList
+        urlList.append(docNames[str(doc)])
+    return urlList
 
 if __name__ == '__main__':
-    #indexer.BuildIndex()
+    indexer.BuildIndex()
     startEngine()

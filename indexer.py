@@ -59,7 +59,7 @@ def buildIndex():
     threshold = 0
     docs_counter = 0
     #for d in docs:
-    for dirpath, dirnames, filenames in os.walk('ANALYST'):
+    for dirpath, dirnames, filenames in os.walk('DEV'):
         for file in filenames:
             print(f'file{id}')
             id += 1
