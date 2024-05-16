@@ -1,6 +1,8 @@
 import json
 import indexer
-import indexer
+from nltk.stem.porter import PorterStemmer
+
+
 
 memoryIndex = {}
 docNames = {}
@@ -15,11 +17,15 @@ def startEngine():
     #load doc names into docNames
     docNames = json.load(y)
 
+   # print("THIS IS MEMORY INDEX\n", memoryIndex)
+
     while True:
         #take in input
-        query = "uci ics"
+        query = "machine learning"
         #split up input
-        tokens = query.split()
+        stemmer = PorterStemmer()
+        tokens = [stemmer.stem(t) for t in query.split()]
+        print("THIS IS TOKENS\n", tokens)
         #print(tokens)
         
         tokenDict = {}
@@ -69,5 +75,5 @@ def getdocURLS(docList):
     return urlList
 
 if __name__ == '__main__':
-    indexer.BuildIndex()
+    #indexer.buildIndex()
     startEngine()
