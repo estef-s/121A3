@@ -153,7 +153,8 @@ def mergeIndexes(file1, file2, writeFile):
             lv1 = json.loads(json_loads_line1)
             lv2 = json.loads(json_loads_line2)
 
-            master_list = lv1 + lv2            
+            #FIX: check for duplicates
+            master_list = lv1 + lv2
             val_json_string = json.dumps(master_list)
             shi = {l1Key: val_json_string} #dictionary of token to values_json_string
             dump_obj = json.dumps(shi)
@@ -193,7 +194,7 @@ def buildIndexofIndex():
         line = file.readline()
         while line:
             #jsonloads line
-            indexMap[line] = position
+            indexMap[list(json.loads(line).keys())[0]] = position
             addSize = len(line)
             position = position + addSize
             line = file.readline()
