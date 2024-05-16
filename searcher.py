@@ -1,5 +1,6 @@
 import json
 import indexer
+import indexer
 
 memoryIndex = {}
 docNames = {}
