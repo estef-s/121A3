@@ -38,6 +38,7 @@ def tokenize(doc):
                 token = ""
     if token:
         token = stemmer.stem(token.lower())
+        #t = token.lower()
         tokens.append(token)
     
     return tokens 
@@ -67,6 +68,7 @@ def buildIndex():
             docs_counter += 1
 
             with open(filepath, 'r') as f:
+                #print(f)
                 d = json.load(f)
                 #parse & remove duplicates
                 tokens = []
@@ -82,7 +84,7 @@ def buildIndex():
                     else:
                         index_hash[t].append(Posting(id, tokens_dict[t]))
 
-            if docs_counter == 663:
+            if docs_counter == 20000:
                 #essentially if we went through 10000 documents, dump into text file
 
                 sorted_hash = dict(sorted(index_hash.items()))
