@@ -21,11 +21,12 @@ def startEngine():
 
     while True:
         #take in input
-        query = "machine learning"
+        query = input("What do you want to search for?\n")
         #split up input
         stemmer = PorterStemmer()
         tokens = [stemmer.stem(t) for t in query.split()]
-        print("THIS IS TOKENS\n", tokens)
+        #tokens = query.split()
+        #print("THIS IS TOKENS\n", tokens)
         #print(tokens)
         
         tokenDict = {}
@@ -48,14 +49,15 @@ def startEngine():
        # print("THIS IS V\n", v)
         
         intersect_docID = list(set.intersection(*set_list))
-        print("THIS IS INTERSECT DOCID", intersect_docID)
+        #print("THIS IS INTERSECT DOCID", intersect_docID)
         #return intersection of list
         
         #go through docnames and match up doc ids w/ url
         #print("THIS IS docNAMES\n", docNames)
         urls = getdocURLS(intersect_docID)
-        print(urls)
-        break
+        print(f"Here are the top 5 links for {query}:")
+        print(urls[:5], "\n")
+        #break
 
 
 def findTokenList(token):
