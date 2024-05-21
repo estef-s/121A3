@@ -6,6 +6,7 @@ import json
 import os
 import pickle
 import sys
+import math
 
 
 from posting import Posting
@@ -78,11 +79,14 @@ def buildIndex():
                 docNames[id] = d['url']
 
                 for t in tokens_dict.keys():
+                    # added tf weight to score
                     if t not in index_hash:
-                        index_hash[t] = [Posting(id, tokens_dict[t])]
+                        fscore = 1 + math.log10(tokens_dict[t])
+                        index_hash[t] = [Posting(id, fscore)]
                     
                     else:
-                        index_hash[t].append(Posting(id, tokens_dict[t]))
+                        fscore = 1 + math.log10(tokens_dict[t])
+                        index_hash[t].append(Posting(id, fscore))
 
             if docs_counter == 20000:
                 #essentially if we went through 10000 documents, dump into text file
@@ -207,6 +211,9 @@ def buildIndexofIndex():
     json.dump(indexMap, storeIndex)
     storeIndex.close()
     return indexMap
+
+
+
 
 if __name__ == '__main__':
     buildIndex()
