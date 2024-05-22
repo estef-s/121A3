@@ -6,12 +6,14 @@ import json
 import os
 import pickle
 import sys
+import math
 
 
 from posting import Posting
 
 docNames = {}
 file_num = 1
+total_docs = 0
 
 def tokenize(doc):
     soup = BeautifulSoup(doc['content'], 'html.parser')
@@ -38,6 +40,7 @@ def tokenize(doc):
                 token = ""
     if token:
         token = stemmer.stem(token.lower())
+        #t = token.lower()
         tokens.append(token)
     
     return tokens 
@@ -52,6 +55,7 @@ def computeWordFrequencies(tokenList):
     return wordFreq
 
 def buildIndex():
+    global total_docs
     index_hash = {}
     final_hash = {}
     id = 0
@@ -59,14 +63,16 @@ def buildIndex():
     threshold = 0
     docs_counter = 0
     #for d in docs:
-    for dirpath, dirnames, filenames in os.walk('DEV'):
+    for dirpath, dirnames, filenames in os.walk('ANALYST'):
         for file in filenames:
             print(f'file{id}')
             id += 1
             filepath = os.path.join(dirpath, file)
             docs_counter += 1
+            total_docs+=1
 
             with open(filepath, 'r') as f:
+                #print(f)
                 d = json.load(f)
                 #parse & remove duplicates
                 tokens = []
@@ -76,13 +82,16 @@ def buildIndex():
                 docNames[id] = d['url']
 
                 for t in tokens_dict.keys():
+                    # added tf weight to score
                     if t not in index_hash:
-                        index_hash[t] = [Posting(id, tokens_dict[t])]
+                        fscore = 1 + math.log10(tokens_dict[t])
+                        index_hash[t] = [Posting(id, fscore)]
                     
                     else:
-                        index_hash[t].append(Posting(id, tokens_dict[t]))
+                        fscore = 1 + math.log10(tokens_dict[t])
+                        index_hash[t].append(Posting(id, fscore))
 
-            if docs_counter == 663:
+            if docs_counter == 700:
                 #essentially if we went through 10000 documents, dump into text file
 
                 sorted_hash = dict(sorted(index_hash.items()))
@@ -186,18 +195,40 @@ def mergeIndexes(file1, file2, writeFile):
     idx2.close()
     
 
+
 def buildIndexofIndex():
     indexMap = {}
     addSize = 0
     position = 0
-    with open('masterIndex.txt', 'r') as file:
-        line = file.readline()
-        while line:
-            #jsonloads line
-            indexMap[list(json.loads(line).keys())[0]] = position
-            addSize = len(line)
-            position = position + addSize
-            line = file.readline()
+    with open('masterIndex.txt', 'r') as file1:
+        with open("newMasterIndex.txt", 'w') as outfile:
+
+            line = file1.readline()
+            while line:
+                json_line = json.loads(line)
+                token = list(json_line.keys())[0]
+                postings = json.loads(json_line[token])
+
+                #calculate IDF
+                docs_with_token = len(postings)
+                idf_term = math.log10(total_docs/docs_with_token)
+
+                #Calculate new score for every doc in term
+                for post_obj in list(postings):
+                    post_obj['score'] = int(post_obj['score']) * idf_term
+                        
+                    
+
+                #push to new file
+                postings = json.dumps(postings)
+                new_line = json.dumps({token:postings}) +'\n'
+                outfile.write(new_line)
+
+                #jsonloads line
+                indexMap[list(json_line.keys())[0]] = position
+                addSize = len(new_line)
+                position = position + addSize
+                line = file1.readline()
         
     
     storeIndex = open('indexIndex.txt', 'w')
@@ -205,6 +236,10 @@ def buildIndexofIndex():
     json.dump(indexMap, storeIndex)
     storeIndex.close()
     return indexMap
+
+
+
+
 
 if __name__ == '__main__':
     buildIndex()

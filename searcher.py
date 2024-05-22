@@ -1,6 +1,8 @@
 import json
 import indexer
-import indexer
+from nltk.stem.porter import PorterStemmer
+
+
 
 memoryIndex = {}
 docNames = {}
@@ -15,11 +17,16 @@ def startEngine():
     #load doc names into docNames
     docNames = json.load(y)
 
+   # print("THIS IS MEMORY INDEX\n", memoryIndex)
+
     while True:
         #take in input
-        query = "uci ics"
+        query = input("What do you want to search for?\n")
         #split up input
-        tokens = query.split()
+        stemmer = PorterStemmer()
+        tokens = [stemmer.stem(t) for t in query.split()]
+        #tokens = query.split()
+        #print("THIS IS TOKENS\n", tokens)
         #print(tokens)
         
         tokenDict = {}
@@ -42,14 +49,15 @@ def startEngine():
        # print("THIS IS V\n", v)
         
         intersect_docID = list(set.intersection(*set_list))
-        print("THIS IS INTERSECT DOCID", intersect_docID)
+        #print("THIS IS INTERSECT DOCID", intersect_docID)
         #return intersection of list
         
         #go through docnames and match up doc ids w/ url
         #print("THIS IS docNAMES\n", docNames)
         urls = getdocURLS(intersect_docID)
-        print(urls)
-        break
+        print(f"Here are the top 5 links for {query}:")
+        print(urls[:5], "\n")
+        #break
 
 
 def findTokenList(token):
@@ -57,9 +65,9 @@ def findTokenList(token):
     with open('masterIndex.txt', 'r') as file:
         position = memoryIndex[token]
         file.seek(position)
-        list = json.loads(file.readline()) #change to json.loads
+        list_d = json.loads(file.readline()) #change to json.loads
     #print("THIS IS LIST\n", list[token])
-    return list[token]
+    return list_d[token]
 
 def getdocURLS(docList):
     urlList = []
@@ -69,5 +77,5 @@ def getdocURLS(docList):
     return urlList
 
 if __name__ == '__main__':
-    indexer.BuildIndex()
+    #indexer.buildIndex()
     startEngine()
