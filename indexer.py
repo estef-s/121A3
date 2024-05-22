@@ -55,6 +55,7 @@ def computeWordFrequencies(tokenList):
     return wordFreq
 
 def buildIndex():
+    global total_docs
     index_hash = {}
     final_hash = {}
     id = 0
@@ -90,7 +91,7 @@ def buildIndex():
                         fscore = 1 + math.log10(tokens_dict[t])
                         index_hash[t].append(Posting(id, fscore))
 
-            if docs_counter == 20000:
+            if docs_counter == 700:
                 #essentially if we went through 10000 documents, dump into text file
 
                 sorted_hash = dict(sorted(index_hash.items()))
@@ -200,27 +201,27 @@ def buildIndexofIndex():
     addSize = 0
     position = 0
     with open('masterIndex.txt', 'r') as file1:
-        with open("newMasterIndex", 'w') as outfile:
+        with open("newMasterIndex.txt", 'w') as outfile:
 
             line = file1.readline()
             while line:
                 json_line = json.loads(line)
-                token = list(json_line.keys())[]
-                postings = json_line[term]
+                token = list(json_line.keys())[0]
+                postings = json.loads(json_line[token])
 
                 #calculate IDF
                 docs_with_token = len(postings)
                 idf_term = math.log10(total_docs/docs_with_token)
 
                 #Calculate new score for every doc in term
-                for post_obj in json_line.values()[0]:
-                    for key in post_obj:
-                        post_obj[key] = post_obj[key] * idf_term
+                for post_obj in list(postings):
+                    post_obj['score'] = int(post_obj['score']) * idf_term
                         
                     
 
                 #push to new file
-                new_line = json_line.strip() +'\n'
+                postings = json.dumps(postings)
+                new_line = json.dumps({token:postings}) +'\n'
                 outfile.write(new_line)
 
                 #jsonloads line
