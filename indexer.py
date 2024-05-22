@@ -13,6 +13,7 @@ from posting import Posting
 
 docNames = {}
 file_num = 1
+total_docs = 0
 
 def tokenize(doc):
     soup = BeautifulSoup(doc['content'], 'html.parser')
@@ -61,12 +62,13 @@ def buildIndex():
     threshold = 0
     docs_counter = 0
     #for d in docs:
-    for dirpath, dirnames, filenames in os.walk('DEV'):
+    for dirpath, dirnames, filenames in os.walk('ANALYST'):
         for file in filenames:
             print(f'file{id}')
             id += 1
             filepath = os.path.join(dirpath, file)
             docs_counter += 1
+            total_docs+=1
 
             with open(filepath, 'r') as f:
                 #print(f)
@@ -192,18 +194,40 @@ def mergeIndexes(file1, file2, writeFile):
     idx2.close()
     
 
+
 def buildIndexofIndex():
     indexMap = {}
     addSize = 0
     position = 0
-    with open('masterIndex.txt', 'r') as file:
-        line = file.readline()
-        while line:
-            #jsonloads line
-            indexMap[list(json.loads(line).keys())[0]] = position
-            addSize = len(line)
-            position = position + addSize
-            line = file.readline()
+    with open('masterIndex.txt', 'r') as file1:
+        with open("newMasterIndex", 'w') as outfile:
+
+            line = file1.readline()
+            while line:
+                json_line = json.loads(line)
+                token = list(json_line.keys())[]
+                postings = json_line[term]
+
+                #calculate IDF
+                docs_with_token = len(postings)
+                idf_term = math.log10(total_docs/docs_with_token)
+
+                #Calculate new score for every doc in term
+                for post_obj in json_line.values()[0]:
+                    for key in post_obj:
+                        post_obj[key] = post_obj[key] * idf_term
+                        
+                    
+
+                #push to new file
+                new_line = json_line.strip() +'\n'
+                outfile.write(new_line)
+
+                #jsonloads line
+                indexMap[list(json_line.keys())[0]] = position
+                addSize = len(new_line)
+                position = position + addSize
+                line = file1.readline()
         
     
     storeIndex = open('indexIndex.txt', 'w')
@@ -211,6 +235,7 @@ def buildIndexofIndex():
     json.dump(indexMap, storeIndex)
     storeIndex.close()
     return indexMap
+
 
 
 

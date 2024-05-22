@@ -65,9 +65,9 @@ def findTokenList(token):
     with open('masterIndex.txt', 'r') as file:
         position = memoryIndex[token]
         file.seek(position)
-        list = json.loads(file.readline()) #change to json.loads
+        list_d = json.loads(file.readline()) #change to json.loads
     #print("THIS IS LIST\n", list[token])
-    return list[token]
+    return list_d[token]
 
 def getdocURLS(docList):
     urlList = []
