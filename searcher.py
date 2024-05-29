@@ -32,7 +32,8 @@ def startEngine():
         tokenDict = {}
         for token in tokens:
             #get the posting lists from in masterindex.txt using seek
-            x = json.loads(findTokenList(token))
+            y = findTokenList(token)
+            x = json.loads(y)
             docIds = []
             for i in x:
                 docIds.append(i.get('docID'))
@@ -75,6 +76,36 @@ def getdocURLS(docList):
     for doc in docList:
         urlList.append(docNames[str(doc)])
     return urlList
+
+def computeWordFrequencies(tokenList):
+    wordFreq = {}
+    for token in tokenList:
+        if token in wordFreq: # if already in dictionary, add to frequency otherwise set to 1
+            wordFreq[token] += 1
+        else: 
+            wordFreq[token] = 1
+    return wordFreq
+
+def cosineScore(query):
+    scores = {}
+    length_ = [] 
+    stemmer = PorterStemmer()
+    tokens = [stemmer.stem(t) for t in query.split()]
+    for t in tokens:
+        posting_list = findTokenList(t)
+        wordFreq = computeWordFrequencies(query)
+        w_tq = wordFreq[t]
+        for pl in posting_list:
+            scores[pl.getScore()] = pl.getScore() * w_tq
+    #array_length = length_(scores.keys())
+    for k in scores.keys():
+        scores[k] = scores[k] / #length[d]
+
+    #return top k components         
+
+
+
+
 
 if __name__ == '__main__':
     #indexer.buildIndex()

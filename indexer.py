@@ -15,10 +15,18 @@ docNames = {}
 file_num = 1
 total_docs = 0
 
-def tokenize(doc):
+def getText(doc):
     soup = BeautifulSoup(doc['content'], 'html.parser')
     text = soup.get_text()
     text = text.strip().lower()
+    return text
+
+def tokenize(doc):
+    # soup = BeautifulSoup(doc['content'], 'html.parser')
+    # text = soup.get_text()
+    # text = text.strip().lower()
+    text = getText(doc)
+
     for tok in text:
         if tok == '':
             text.remove(tok)
@@ -85,11 +93,11 @@ def buildIndex():
                     # added tf weight to score
                     if t not in index_hash:
                         fscore = 1 + math.log10(tokens_dict[t])
-                        index_hash[t] = [Posting(id, fscore)]
+                        index_hash[t] = [Posting(id, fscore, len(getText()))]
                     
                     else:
                         fscore = 1 + math.log10(tokens_dict[t])
-                        index_hash[t].append(Posting(id, fscore))
+                        index_hash[t].append(Posting(id, fscore, len(getText())))
 
             if docs_counter == 700:
                 #essentially if we went through 10000 documents, dump into text file
