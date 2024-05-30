@@ -1,11 +1,12 @@
 import json
 import indexer
 from nltk.stem.porter import PorterStemmer
-from indexer import docLengths
+
 
 
 memoryIndex = {}
 docNames = {}
+doc_lengths = {}
 def startEngine():
     #load index of index into memoryIndex
     global memoryIndex
@@ -97,6 +98,7 @@ def computeWordFrequencies(tokenList):
     return wordFreq
 
 def cosineScore(query):
+    global doc_lengths
     scores = {}
     length_ = [] 
     # stemmer = PorterStemmer()
@@ -121,8 +123,11 @@ def cosineScore(query):
 
    
     #array_length = length_(scores.keys())
+    z = open('docLengths.txt', 'r')
+    doc_lengths = json.load(z)
+    print(doc_lengths)
     for k in scores.keys():
-        scores[k] = scores[k] / docLengths[k] # FIX LENGTH NUMBER (REPLACE 500)
+        scores[k] = scores[k] / doc_lengths[str(k)] # FIX LENGTH NUMBER (REPLACE 500)
 
     sorted_scores = sorted(scores, key = lambda x: scores[x], reverse = True)
 

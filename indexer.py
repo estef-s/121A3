@@ -65,6 +65,7 @@ def computeWordFrequencies(tokenList):
 
 def buildIndex():
     global total_docs
+    global docLengths
     index_hash = {}
     final_hash = {}
     id = 0
@@ -142,17 +143,20 @@ def buildIndex():
         docs_counter = 0
 
     
-        
 
     #dump docNames into file
     docs = open('docUrl.txt', 'w')
     json.dump(docNames, docs)
+    #dump doclengths into file
+    d_length = open('docLengths.txt','w')
+    json.dump(docLengths, d_length)
     #merge files
     tempMerge = 'tempMerge.txt'
     mergeIndexes('idx1.txt', 'idx2.txt', tempMerge)
     mergeIndexes(tempMerge, 'idx3.txt', 'masterIndex.txt')
     #build index of index
     buildIndexofIndex()
+
 
     return index_hash     
     
@@ -212,6 +216,7 @@ def mergeIndexes(file1, file2, writeFile):
 
 
 def buildIndexofIndex():
+    global docLengths
     indexMap = {}
     addSize = 0
     position = 0
@@ -250,6 +255,8 @@ def buildIndexofIndex():
     #dump index into file
     json.dump(indexMap, storeIndex)
     storeIndex.close()
+
+    #print(docLengths)
     return indexMap
 
 
