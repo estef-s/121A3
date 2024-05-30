@@ -1,7 +1,7 @@
 import json
 import indexer
 from nltk.stem.porter import PorterStemmer
-
+from indexer import docLengths
 
 
 memoryIndex = {}
@@ -112,12 +112,14 @@ def cosineScore(query):
         for pl in post_l:
             # print("this is PL", pl)
             # print(type(pl))
-            scores[pl['docID']] = pl['score'] * w_tq
+            # print(pl)
+            scores[pl['docID']] += pl['score'] * w_tq
+            
 
    
     #array_length = length_(scores.keys())
     for k in scores.keys():
-        scores[k] = scores[k] / 500 # FIX LENGTH NUMBER (REPLACE 500)
+        scores[k] = scores[k] / docLengths[k] # FIX LENGTH NUMBER (REPLACE 500)
 
     sorted_scores = sorted(scores, key = lambda x: scores[x], reverse = True)
 

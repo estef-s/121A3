@@ -14,6 +14,7 @@ from posting import Posting
 docNames = {}
 file_num = 1
 total_docs = 0
+docLengths = {}
 
 def getText(doc):
     soup = BeautifulSoup(doc['content'], 'html.parser')
@@ -85,6 +86,9 @@ def buildIndex():
                 #parse & remove duplicates
                 tokens = []
                 tokens = tokenize(d)
+
+                docLengths[id] = len(getText(d))
+
                 tokens_dict = computeWordFrequencies(tokens)
 
                 docNames[id] = d['url']
@@ -93,11 +97,11 @@ def buildIndex():
                     # added tf weight to score
                     if t not in index_hash:
                         fscore = 1 + math.log10(tokens_dict[t])
-                        index_hash[t] = [Posting(id, fscore, len(getText()))]
+                        index_hash[t] = [Posting(id, fscore)]
                     
                     else:
                         fscore = 1 + math.log10(tokens_dict[t])
-                        index_hash[t].append(Posting(id, fscore, len(getText())))
+                        index_hash[t].append(Posting(id, fscore))
 
             if docs_counter == 700:
                 #essentially if we went through 10000 documents, dump into text file
@@ -136,6 +140,9 @@ def buildIndex():
         out_file.close()        
         file_num += 1
         docs_counter = 0
+
+    
+        
 
     #dump docNames into file
     docs = open('docUrl.txt', 'w')

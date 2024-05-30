@@ -4,12 +4,10 @@ class Posting:
     docName = ""
     docID = -1
     score = -1
-    docLength = -1
 
-    def __init__(self, docID, score, docLength):
+    def __init__(self, docID, score):
         self.docID = docID
         self.score = score
-        self.docLength = docLength
     
     def getDocID(self):
         return self.docID
@@ -20,7 +18,5 @@ class Posting:
     def setScore(self, score):
         self.score = score
 
-    def getDocLength(self):
-        return self.docLength
 
     
