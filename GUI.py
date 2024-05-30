@@ -1,5 +1,7 @@
 import streamlit as sl
+import searcher as s
 
+s.setUP()
 sl.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">', unsafe_allow_html=True)
 
 def icon(icon_name):
@@ -8,16 +10,26 @@ def icon(icon_name):
 background = """
 <style>
     .stApp {
-        background-color: #4E5166;
+        background-color: #B9B7A7;
     }
     .stApp h1{
-        color: #B9B7A7;
+        color: #4E5166;
     }
     .stApp h3{
-        color: #B9B7A7;
+        color: #4E5166;
     }
     .stApp p{
-        color: #B9B7A7;
+        color: #4E5166;
+    }
+
+    a.custom-link {
+    color: #B9B7A7; /* Tomato color */
+    text-decoration: none;
+    }
+
+    a.custom-link:hover {
+        color: #ff4500; /* OrangeRed color */
+        text-decoration: underline;
     }
 </style>
 """
@@ -32,19 +44,13 @@ sl.title("Searching for...")
 
 
 icon_pic = sl.markdown(icon("search") + " Search", unsafe_allow_html=True)
-query = sl.text_input(label = "", value = "")
+query = sl.text_input(label = "Enter Search", value = "")
 
-
-
-# # Display a text input box in the second column
-# with col2:
-#     user_input = st.text_input("Search", value="", help="Search for something")
-
-# # Add a search icon to the first column
-# with col1:
-#     st.markdown(icon("search"), unsafe_allow_html=True)
 
 sl.subheader("Previous Search") #h3
 
 if query:
+    results = s.startEngine(query)
     sl.write(query)
+    for r in results:
+        sl.write(r)
