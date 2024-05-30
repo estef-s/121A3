@@ -110,10 +110,13 @@ def cosineScore(query):
        # print("THIS IS THE TYPE FOR POSTING LIST", type(posting_list))
         post_l = json.loads(posting_list)
         for pl in post_l:
-            # print("this is PL", pl)
-            # print(type(pl))
+            print("this is PL", pl)
+            print(type(pl))
             # print(pl)
-            scores[pl['docID']] += pl['score'] * w_tq
+            if pl['docID'] not in scores:
+                scores[pl['docID']] = pl['score'] * w_tq
+            else: 
+                scores[pl['docID']] += pl['score'] * w_tq
             
 
    
