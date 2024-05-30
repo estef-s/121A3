@@ -4,6 +4,7 @@ To create files for search engine:
   Run indexer.py using the command: python3 indexer.py
 
 To run search engine with GUI:
+  Install streamlit with: pip install streamlit
   Use command: streamlit run GUI.py
 
 To run search engine without GUI:
