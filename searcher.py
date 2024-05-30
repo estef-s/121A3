@@ -22,9 +22,11 @@ def startEngine():
     while True:
         #take in input
         query = input("What do you want to search for?\n")
+        
         #split up input
         stemmer = PorterStemmer()
         tokens = [stemmer.stem(t) for t in query.split()]
+       
         #tokens = query.split()
         #print("THIS IS TOKENS\n", tokens)
         #print(tokens)
@@ -50,6 +52,8 @@ def startEngine():
        # print("THIS IS V\n", v)
         
         intersect_docID = list(set.intersection(*set_list))
+
+        sorted_top_links = getdocURLS(cosineScore(tokens))
         #print("THIS IS INTERSECT DOCID", intersect_docID)
         #return intersection of list
         
@@ -57,13 +61,19 @@ def startEngine():
         #print("THIS IS docNAMES\n", docNames)
         urls = getdocURLS(intersect_docID)
         print(f"Here are the top 5 links for {query}:")
-        print(urls[:5], "\n")
+
+        test_top_links = []
+        for i in range(len(urls)):
+            if sorted_top_links[i] in urls:
+                test_top_links.append(sorted_top_links[i])
+
+        print(test_top_links[:5], "\n")
         #break
 
 
 def findTokenList(token):
     #print("THIS IS TOKEN\n", token)
-    with open('masterIndex.txt', 'r') as file:
+    with open('newMasterIndex.txt', 'r') as file:
         position = memoryIndex[token]
         file.seek(position)
         list_d = json.loads(file.readline()) #change to json.loads
@@ -89,17 +99,38 @@ def computeWordFrequencies(tokenList):
 def cosineScore(query):
     scores = {}
     length_ = [] 
-    stemmer = PorterStemmer()
-    tokens = [stemmer.stem(t) for t in query.split()]
-    for t in tokens:
+    # stemmer = PorterStemmer()
+    # tokens = [stemmer.stem(t) for t in query.split()]
+    for t in query:
         posting_list = findTokenList(t)
         wordFreq = computeWordFrequencies(query)
+       # print("THIS IS WORD FREQ", wordFreq)
         w_tq = wordFreq[t]
-        for pl in posting_list:
-            scores[pl.getScore()] = pl.getScore() * w_tq
+       # print("THIS iS POSTING LIST", posting_list)
+       # print("THIS IS THE TYPE FOR POSTING LIST", type(posting_list))
+        post_l = json.loads(posting_list)
+        for pl in post_l:
+            # print("this is PL", pl)
+            # print(type(pl))
+            scores[pl['docID']] = pl['score'] * w_tq
+
+   
     #array_length = length_(scores.keys())
     for k in scores.keys():
-        scores[k] = scores[k] / #length[d]
+        scores[k] = scores[k] / 500 # FIX LENGTH NUMBER (REPLACE 500)
+
+    sorted_scores = sorted(scores, key = lambda x: scores[x], reverse = True)
+
+    return sorted_scores
+   
+
+    
+    # print("THIS IS sorted scores", sorted_scores)
+    # print("THIS IS SCORES", scores)
+
+
+    #print("THIS IS SCORES", scores)
+    
 
     #return top k components         
 
