@@ -1,6 +1,7 @@
 import json
 import indexer
 from nltk.stem.porter import PorterStemmer
+import time 
 
 
 
@@ -24,6 +25,7 @@ def startEngine(query):
     #query = input("What do you want to search for?\n")
     #split up input
     stemmer = PorterStemmer()
+    time.time()
     tokens = [stemmer.stem(t) for t in query.split()]
     #tokens = query.split()
     #print("THIS IS TOKENS\n", tokens)
@@ -57,6 +59,7 @@ def startEngine(query):
     urls = getdocURLS(intersect_docID)
     print(f"Here are the top 5 links for {query}:")
     print(urls[:5], "\n")
+    print(f"Search time: {(time.time()-start_time)*1000} ms\n")
     return urls
 
 
