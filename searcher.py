@@ -1,8 +1,7 @@
 import json
 import indexer
 from nltk.stem.porter import PorterStemmer
-
-
+import time
 
 memoryIndex = {}
 docNames = {}
@@ -108,6 +107,8 @@ def cosineScore(query):
         wordFreq = computeWordFrequencies(query)
        # print("THIS IS WORD FREQ", wordFreq)
         w_tq = wordFreq[t]
+        #print(w_tq)
+        #time.sleep(20)
        # print("THIS iS POSTING LIST", posting_list)
        # print("THIS IS THE TYPE FOR POSTING LIST", type(posting_list))
         post_l = json.loads(posting_list)
@@ -119,9 +120,9 @@ def cosineScore(query):
                 scores[pl['docID']] = pl['score'] * w_tq
             else: 
                 scores[pl['docID']] += pl['score'] * w_tq
-            
+            print("PL SCORES||||||||||||||", pl['score'])
 
-   
+    
     #array_length = length_(scores.keys())
     z = open('docLengths.txt', 'r')
     doc_lengths = json.load(z)

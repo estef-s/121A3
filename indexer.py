@@ -7,7 +7,7 @@ import os
 import pickle
 import sys
 import math
-
+import time
 
 from posting import Posting
 
@@ -229,15 +229,37 @@ def buildIndexofIndex():
                 token = list(json_line.keys())[0]
                 postings = json.loads(json_line[token])
 
+
+                # print("THIS IS POSTINGS!!!!!!!", postings)
+
                 #calculate IDF
+
+               # print("TOTAL DOCS: ", total_docs)
+               
+                print("THIS IS TYPE|||||||||||||||||", type(postings))
                 docs_with_token = len(postings)
+                if docs_with_token > total_docs:
+                    print("THIS IS DOCS_WITH_TOKEN|||||||||||||||||||||", docs_with_token)
+
+               # print("DOCS W TOKENS: ", docs_with_token)
                 idf_term = math.log10(total_docs/docs_with_token)
+
+                
+
+
+               # print("THIS IS DOCS W TOKEN!!!!!!!!!", docs_with_token)
+
+                # print("THIS IS IDF_TERM!!!!!!!!!!!!!", idf_term)
+
+                #time.sleep(10)
 
                 #Calculate new score for every doc in term
                 for post_obj in list(postings):
+                   
                     post_obj['score'] = int(post_obj['score']) * idf_term
                         
-                    
+                    #print("POST_OBJ", post_obj)    
+                #break
 
                 #push to new file
                 postings = json.dumps(postings)
