@@ -236,10 +236,25 @@ def buildIndexofIndex():
 
                # print("TOTAL DOCS: ", total_docs)
                
-                print("THIS IS TYPE|||||||||||||||||", type(postings))
-                docs_with_token = len(postings)
-                if docs_with_token > total_docs:
-                    print("THIS IS DOCS_WITH_TOKEN|||||||||||||||||||||", docs_with_token)
+             #   print("THIS IS TYPE|||||||||||||||||", type(postings))
+                #docs_with_token = len(postings)
+
+                visited = []
+                for p_obj in list(postings):
+                    if p_obj['docID'] not in visited:
+                        visited.append(p_obj['docID'])
+                    
+
+                docs_with_token = len(visited)
+                        
+                
+
+
+                # print("THIS IS DOCS_WITH_TOKEN ||||||||||||||||||||", docs_with_token)
+                # #time.sleep(100)
+                # if docs_with_token > total_docs:
+                #     print("THIS IS DOCS|||||||||||||||||||||", docs_with_token)
+                #     time.sleep(100)
 
                # print("DOCS W TOKENS: ", docs_with_token)
                 idf_term = math.log10(total_docs/docs_with_token)
