@@ -7,18 +7,27 @@ import os
 import pickle
 import sys
 import math
-
+import time
 
 from posting import Posting
 
 docNames = {}
 file_num = 1
 total_docs = 0
+docLengths = {}
 
-def tokenize(doc):
+def getText(doc):
     soup = BeautifulSoup(doc['content'], 'html.parser')
     text = soup.get_text()
     text = text.strip().lower()
+    return text
+
+def tokenize(doc):
+    # soup = BeautifulSoup(doc['content'], 'html.parser')
+    # text = soup.get_text()
+    # text = text.strip().lower()
+    text = getText(doc)
+
     for tok in text:
         if tok == '':
             text.remove(tok)
@@ -56,6 +65,7 @@ def computeWordFrequencies(tokenList):
 
 def buildIndex():
     global total_docs
+    global docLengths
     index_hash = {}
     final_hash = {}
     id = 0
@@ -77,6 +87,9 @@ def buildIndex():
                 #parse & remove duplicates
                 tokens = []
                 tokens = tokenize(d)
+
+                docLengths[id] = len(getText(d))
+
                 tokens_dict = computeWordFrequencies(tokens)
 
                 docNames[id] = d['url']
@@ -129,15 +142,21 @@ def buildIndex():
         file_num += 1
         docs_counter = 0
 
+    
+
     #dump docNames into file
     docs = open('docUrl.txt', 'w')
     json.dump(docNames, docs)
+    #dump doclengths into file
+    d_length = open('docLengths.txt','w')
+    json.dump(docLengths, d_length)
     #merge files
     tempMerge = 'tempMerge.txt'
     mergeIndexes('idx1.txt', 'idx2.txt', tempMerge)
     mergeIndexes(tempMerge, 'idx3.txt', 'masterIndex.txt')
     #build index of index
     buildIndexofIndex()
+
 
     return index_hash     
     
@@ -197,6 +216,7 @@ def mergeIndexes(file1, file2, writeFile):
 
 
 def buildIndexofIndex():
+    global docLengths
     indexMap = {}
     addSize = 0
     position = 0
@@ -209,15 +229,52 @@ def buildIndexofIndex():
                 token = list(json_line.keys())[0]
                 postings = json.loads(json_line[token])
 
+
+                # print("THIS IS POSTINGS!!!!!!!", postings)
+
                 #calculate IDF
-                docs_with_token = len(postings)
+
+               # print("TOTAL DOCS: ", total_docs)
+               
+             #   print("THIS IS TYPE|||||||||||||||||", type(postings))
+                #docs_with_token = len(postings)
+
+                visited = []
+                for p_obj in list(postings):
+                    if p_obj['docID'] not in visited:
+                        visited.append(p_obj['docID'])
+                    
+
+                docs_with_token = len(visited)
+                        
+                
+
+
+                # print("THIS IS DOCS_WITH_TOKEN ||||||||||||||||||||", docs_with_token)
+                # #time.sleep(100)
+                # if docs_with_token > total_docs:
+                #     print("THIS IS DOCS|||||||||||||||||||||", docs_with_token)
+                #     time.sleep(100)
+
+               # print("DOCS W TOKENS: ", docs_with_token)
                 idf_term = math.log10(total_docs/docs_with_token)
+
+                
+
+
+               # print("THIS IS DOCS W TOKEN!!!!!!!!!", docs_with_token)
+
+                # print("THIS IS IDF_TERM!!!!!!!!!!!!!", idf_term)
+
+                #time.sleep(10)
 
                 #Calculate new score for every doc in term
                 for post_obj in list(postings):
+                   
                     post_obj['score'] = int(post_obj['score']) * idf_term
                         
-                    
+                    #print("POST_OBJ", post_obj)    
+                #break
 
                 #push to new file
                 postings = json.dumps(postings)
@@ -235,6 +292,8 @@ def buildIndexofIndex():
     #dump index into file
     json.dump(indexMap, storeIndex)
     storeIndex.close()
+
+    #print(docLengths)
     return indexMap
 
 
