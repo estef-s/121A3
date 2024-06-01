@@ -122,7 +122,10 @@ def cosineScore(query):
 
 if __name__ == '__main__':
     #indexer.buildIndex()
-    #setUP()
-    startEngine()
+    setUP()
+    while True:
+        query = input("What would you like to search for?\n")
+        startEngine(query)
 
-
+        if query == "quit":
+            break
