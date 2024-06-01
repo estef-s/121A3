@@ -122,7 +122,7 @@ def cosineScore(query):
 
 if __name__ == '__main__':
     #indexer.buildIndex()
-    setUP()
-    startEngine('master of software engineering')
+    #setUP()
+    startEngine()
 
 
