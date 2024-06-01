@@ -22,15 +22,11 @@ def setUP():
 def startEngine(query):
     #take in input
     
-    #query = input("What do you want to search for?\n")
-    #split up input
+   
     stemmer = PorterStemmer()
     time.time()
     tokens = [stemmer.stem(t) for t in query.split()]
-    #tokens = query.split()
-    #print("THIS IS TOKENS\n", tokens)
-    #print(tokens)
-    
+   
     tokenDict = {}
     for token in tokens:
         #get the posting lists from in masterindex.txt using seek
@@ -41,35 +37,37 @@ def startEngine(query):
         tokenDict[token] = set(docIds)
 
         
-    #     print("THIS is X\n", docIds)
-    #     print("THIS IS SET X\n", set(docIds))
-
-    # print("TOKEN DICTIONARY", tokenDict)
+   
     set_list = []
     for v in tokenDict.values():
         set_list.append(v)
     # print("THIS IS V\n", v)
     
     intersect_docID = list(set.intersection(*set_list))
-    #print("THIS IS INTERSECT DOCID", intersect_docID)
-    #return intersection of list
-    
-    #go through docnames and match up doc ids w/ url
-    #print("THIS IS docNAMES\n", docNames)
+    sorted_top_links = getdocURLS(cosineScore(tokens))
+    x = cosineScore(tokens)
+    #print("THIS IS X: |||||||||||||||||||", x)
+   
     urls = getdocURLS(intersect_docID)
-    print(f"Here are the top 5 links for {query}:")
-    print(urls[:5], "\n")
-    print(f"Search time: {(time.time()-start_time)*1000} ms\n")
-    return urls
+    #print(f"Here are the top 5 links for {query}:")
+    test_top_links = []
+    for i in range(len(urls)):
+        if sorted_top_links[i] in urls:
+            test_top_links.append(sorted_top_links[i])
+
+    #print(test_top_links[:5], "\n")
+    #print(f"Search time: {(time.time()-start_time)*1000} ms\n")
+    return test_top_links[:10]
 
 
 def findTokenList(token):
     #print("THIS IS TOKEN\n", token)
+    
     with open('newMasterIndex.txt', 'r') as file:
         position = memoryIndex[token]
         file.seek(position)
         list_d = json.loads(file.readline()) #change to json.loads
-        print(type(list_d))
+        #print(type(list_d))
     #print("THIS IS LIST\n", list[token])
     return list_d[token]
 
@@ -80,6 +78,51 @@ def getdocURLS(docList):
         urlList.append(docNames[str(doc)])
     return urlList
 
+
+
+def computeWordFrequencies(tokenList):
+    wordFreq = {}
+    for token in tokenList:
+        if token in wordFreq: # if already in dictionary, add to frequency otherwise set to 1
+            wordFreq[token] += 1
+        else: 
+            wordFreq[token] = 1
+    return wordFreq
+
+def cosineScore(query):
+    global doc_lengths
+    scores = {}
+    length_ = [] 
+    
+    for t in query:
+        posting_list = findTokenList(t)
+        wordFreq = computeWordFrequencies(query)
+        w_tq = wordFreq[t]
+       
+        post_l = json.loads(posting_list)
+        for pl in post_l:
+           
+            if pl['docID'] not in scores:
+                scores[pl['docID']] = pl['score'] * w_tq
+            else: 
+                scores[pl['docID']] += pl['score'] * w_tq
+
+    
+    #array_length = length_(scores.keys())
+    z = open('docLengths.txt', 'r')
+    doc_lengths = json.load(z)
+    #print(doc_lengths)
+    for k in scores.keys():
+        scores[k] = scores[k] / doc_lengths[str(k)] # FIX LENGTH NUMBER (REPLACE 500)
+
+    sorted_scores = sorted(scores, key = lambda x: scores[x], reverse = True)
+
+
+    return sorted_scores
+
 if __name__ == '__main__':
     #indexer.buildIndex()
+    # setUP()
     startEngine()
+
+
