@@ -15,6 +15,19 @@ docNames = {}
 file_num = 1
 total_docs = 0
 docLengths = {}
+def weighted(doc, token):
+    soup = BeautifulSoup(doc['content'], 'html.parser')
+   
+    header = soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'], string = token)
+    if header:
+        return 1.2
+    
+    bold = soup.find_all(['b', 'strong'], string=token)
+    if bold:
+        return 1.1
+    
+    return 1
+   
 
 def getText(doc):
     soup = BeautifulSoup(doc['content'], 'html.parser')
@@ -73,7 +86,7 @@ def buildIndex():
     threshold = 0
     docs_counter = 0
     #for d in docs:
-    for dirpath, dirnames, filenames in os.walk('ANALYST'):
+    for dirpath, dirnames, filenames in os.walk('DEV'):
         for file in filenames:
             print(f'file{id}')
             id += 1
@@ -90,21 +103,24 @@ def buildIndex():
 
                 docLengths[id] = len(getText(d))
 
+                # how many times the token appears in the doc
                 tokens_dict = computeWordFrequencies(tokens)
 
                 docNames[id] = d['url']
 
+
                 for t in tokens_dict.keys():
                     # added tf weight to score
+                    weighted_score = weighted(d, t)
                     if t not in index_hash:
-                        fscore = 1 + math.log10(tokens_dict[t])
+                        fscore = 1 + math.log10(tokens_dict[t] * weighted_score)
                         index_hash[t] = [Posting(id, fscore)]
                     
                     else:
-                        fscore = 1 + math.log10(tokens_dict[t])
+                        fscore = 1 + math.log10(tokens_dict[t] * weighted_score)
                         index_hash[t].append(Posting(id, fscore))
 
-            if docs_counter == 10000:
+            if docs_counter == 19000:
                 #essentially if we went through 10000 documents, dump into text file
 
                 sorted_hash = dict(sorted(index_hash.items()))
