@@ -22,7 +22,7 @@ def setUP():
 def startEngine(query):
     #take in input
     
-   
+    start_time = time.time()
     stemmer = PorterStemmer()
     time.time()
     tokens = [stemmer.stem(t) for t in query.split()]
@@ -55,8 +55,8 @@ def startEngine(query):
         if sorted_top_links[i] in urls:
             test_top_links.append(sorted_top_links[i])
 
-    #print(test_top_links[:5], "\n")
-    #print(f"Search time: {(time.time()-start_time)*1000} ms\n")
+    print(test_top_links[:5], "\n")
+    print(f"Search time: {(time.time()-start_time)*1000} ms\n")
     return test_top_links[:10]
 
 
@@ -122,7 +122,7 @@ def cosineScore(query):
 
 if __name__ == '__main__':
     #indexer.buildIndex()
-    # setUP()
-    startEngine()
+    setUP()
+    startEngine('master of software engineering')
 
 
