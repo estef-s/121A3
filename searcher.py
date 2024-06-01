@@ -59,6 +59,7 @@ def startEngine(query):
     urls = getdocURLS(intersect_docID)
     print(f"Here are the top 5 links for {query}:")
     print(urls[:5], "\n")
+    #print(f"Search time: {(time.time()-start_time)*1000} ms\n")
     print(f"Search time: {(time.time()-start_time)*1000} ms\n")
     return urls
 
