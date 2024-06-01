@@ -104,7 +104,7 @@ def buildIndex():
                         fscore = 1 + math.log10(tokens_dict[t])
                         index_hash[t].append(Posting(id, fscore))
 
-            if docs_counter == 700:
+            if docs_counter == 10000:
                 #essentially if we went through 10000 documents, dump into text file
 
                 sorted_hash = dict(sorted(index_hash.items()))
